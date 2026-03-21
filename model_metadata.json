@@ -1,0 +1,45 @@
+{
+  "numeric_features": [
+    "overall",
+    "potential",
+    "age",
+    "height_cm",
+    "weight_kg",
+    "pace",
+    "shooting",
+    "passing",
+    "dribbling",
+    "defending",
+    "physic",
+    "attacking_crossing",
+    "attacking_finishing",
+    "attacking_heading_accuracy",
+    "attacking_short_passing",
+    "attacking_volleys",
+    "movement_reactions",
+    "mentality_vision",
+    "mentality_composure",
+    "weak_foot",
+    "skill_moves",
+    "international_reputation",
+    "wage_eur",
+    "is_gk"
+  ],
+  "categorical_features": [
+    "preferred_foot"
+  ],
+  "target": "value_eur",
+  "sklearn_version": "1.8.0",
+  "best_params": {
+    "model__learning_rate": 0.05,
+    "model__max_depth": 5,
+    "model__min_samples_split": 5,
+    "model__n_estimators": 200
+  },
+  "test_metrics": {
+    "r2": 0.9782,
+    "mae": 152186.0,
+    "rmse": 1168544.0,
+    "mape": 4.05
+  }
+}
