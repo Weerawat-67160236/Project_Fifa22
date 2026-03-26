@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import joblib
 import json
+import matplotlib.pyplot as plt
 
 st.set_page_config(
     page_title='⚽ FIFA 22 Player Value Predictor',
