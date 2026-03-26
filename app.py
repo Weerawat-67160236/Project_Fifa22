@@ -108,40 +108,16 @@ if st.button('🔮 Predict Market Value', use_container_width=True, type='primar
         c3.metric('RMSE', f"€{m['rmse']:,.0f}")
         c4.metric('MAPE', f"{m['mape']:.1f}%")
 
-
 with st.expander('📊 Feature Importance (Gradient Boosting) — Bonus'):
-  
-    feature_name_map = {
-        'wage_eur': 'เงินเดือน per Week (€)',
-        'age': 'อายุ (Age)',
-        'potential': 'ศักยภาพ (Potential)',
-        'movement_reactions': 'ปฏิกิริยา (Reactions)',
-        'overall': 'พลังรวม (Overall)',
-        'mentality_composure': 'ความสุขุม (Composure)',
-        'attacking_finishing': 'การจบสกอร์ (Finishing)',
-        'attacking_heading_accuracy': 'การโหม่ง (Heading Acc.)',
-        'is_gk': 'ผู้รักษาประตู?',
-        'power_stamina': 'ความอึด (Stamina)'
-    }
-
     feat_names = meta['numeric_features']
     try:
         imps = model.named_steps['model'].feature_importances_[:len(feat_names)]
         fi_df = pd.DataFrame({'feature': feat_names, 'importance': imps})
-
-        fi_df['feature'] = fi_df['feature'].map(feature_name_map).fillna(fi_df['feature'])
-
         fi_df = fi_df.nlargest(10, 'importance').sort_values('importance')
-        
-        fig, ax = plt.subplots(figsize=(10, 8))
-        
+        fig, ax = plt.subplots(figsize=(8, 4))
         ax.barh(fi_df['feature'], fi_df['importance'], color='#42A5F5')
-        ax.set_xlabel('Importance Score')
-        ax.set_title('Top 10 ปัจจัยที่มีผลต่อราคานักเตะ')
-        
-        plt.tight_layout()
-        
+        ax.set_xlabel('Importance')
+        ax.set_title('Top 10 Feature Importances')
         st.pyplot(fig)
     except Exception as e:
         st.write(f'ไม่สามารถแสดง feature importance: {e}')
-# ======================================================================
