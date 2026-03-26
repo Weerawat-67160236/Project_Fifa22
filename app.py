@@ -4,7 +4,6 @@ import pandas as pd
 import joblib
 import json
 import matplotlib.pyplot as plt
-import plotly.graph_objects as go
 
 st.set_page_config(
     page_title='⚽ FIFA 22 Player Value Predictor',
@@ -75,32 +74,6 @@ with col3:
 if potential < overall:
     st.warning('⚠️ Potential ควรมากกว่าหรือเท่ากับ Overall Rating')
 
-# ==========================================
-# กราฟ Radar Chart (ย้ายมาไว้ข้างนอกปุ่ม เพื่อให้ขยับแบบ Real-time)
-# ==========================================
-st.markdown("---")
-st.markdown("### 🕸️ Player Stats Overview")
-categories = ['Pace', 'Shooting', 'Passing', 'Dribbling', 'Defending', 'Physic']
-r_values = [pace, shooting, passing, dribbling, defending, physic]
-
-fig_radar = go.Figure()
-fig_radar.add_trace(go.Scatterpolar(
-    r=r_values,
-    theta=categories,
-    fill='toself',
-    name='Player Stats',
-    line=dict(color='#42A5F5')
-))
-fig_radar.update_layout(
-    polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
-    showlegend=False,
-    margin=dict(l=40, r=40, t=40, b=40)
-)
-st.plotly_chart(fig_radar, use_container_width=True)
-st.markdown("---")
-# ==========================================
-
-# ปุ่ม Predict (ทำนายราคา)
 if st.button('🔮 Predict Market Value', use_container_width=True, type='primary'):
     input_data = pd.DataFrame([{
         'overall': overall, 'potential': potential, 'age': age,
@@ -135,33 +108,16 @@ if st.button('🔮 Predict Market Value', use_container_width=True, type='primar
         c3.metric('RMSE', f"€{m['rmse']:,.0f}")
         c4.metric('MAPE', f"{m['mape']:.1f}%")
 
-# ส่วนที่แก้ชื่อตัวแปรให้อ่านง่าย
 with st.expander('📊 Feature Importance (Gradient Boosting) — Bonus'):
-    feature_name_map = {
-        'wage_eur': 'เงินเดือน per Week (€)',
-        'age': 'อายุ (Age)',
-        'potential': 'ศักยภาพ (Potential)',
-        'movement_reactions': 'ปฏิกิริยา (Reactions)',
-        'overall': 'พลังรวม (Overall)',
-        'mentality_composure': 'ความสุขุม (Composure)',
-        'attacking_finishing': 'การจบสกอร์ (Finishing)',
-        'attacking_heading_accuracy': 'การโหม่ง (Heading Acc.)',
-        'is_gk': 'ผู้รักษาประตู?',
-        'power_stamina': 'ความอึด (Stamina)'
-    }
     feat_names = meta['numeric_features']
     try:
         imps = model.named_steps['model'].feature_importances_[:len(feat_names)]
         fi_df = pd.DataFrame({'feature': feat_names, 'importance': imps})
-        
-        fi_df['feature'] = fi_df['feature'].map(feature_name_map).fillna(fi_df['feature'])
         fi_df = fi_df.nlargest(10, 'importance').sort_values('importance')
-        
-        fig, ax = plt.subplots(figsize=(10, 8))
+        fig, ax = plt.subplots(figsize=(8, 4))
         ax.barh(fi_df['feature'], fi_df['importance'], color='#42A5F5')
-        ax.set_xlabel('Importance Score')
-        ax.set_title('Top 10 ปัจจัยที่มีผลต่อราคานักเตะ')
-        plt.tight_layout()
+        ax.set_xlabel('Importance')
+        ax.set_title('Top 10 Feature Importances')
         st.pyplot(fig)
     except Exception as e:
         st.write(f'ไม่สามารถแสดง feature importance: {e}')
