@@ -1,10 +1,10 @@
-
 import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
 import json
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go  # <-- เพิ่มบรรทัดนี้เพื่อเรียกใช้กราฟ Radar
 
 st.set_page_config(
     page_title='⚽ FIFA 22 Player Value Predictor',
@@ -100,6 +100,28 @@ if st.button('🔮 Predict Market Value', use_container_width=True, type='primar
     low = pred_value * 0.85
     high = pred_value * 1.15
     st.info(f'📊 ช่วงประมาณการ (±15%): €{low:,.0f} — €{high:,.0f}')
+
+    st.markdown("---")
+    st.markdown("### 🕸️ Player Stats Overview")
+    categories = ['Pace', 'Shooting', 'Passing', 'Dribbling', 'Defending', 'Physic']
+    r_values = [pace, shooting, passing, dribbling, defending, physic]
+    
+    fig_radar = go.Figure()
+    fig_radar.add_trace(go.Scatterpolar(
+        r=r_values,
+        theta=categories,
+        fill='toself',
+        name='Player Stats',
+        line=dict(color='#42A5F5')
+    ))
+    fig_radar.update_layout(
+        polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
+        showlegend=False,
+        margin=dict(l=40, r=40, t=40, b=40)
+    )
+    st.plotly_chart(fig_radar, use_container_width=True)
+    st.markdown("---")
+    # ==========================================
 
     with st.expander('📈 Model Performance Metrics'):
         m = meta['test_metrics']
